@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GamePay - Игровая Валюта</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            base: '#0b0d19',
+                            card: '#14182d',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            hover: '#1c213e'
+                        },
+                        neon: {
+                            cyan: '#00f2fe',
+                            purple: '#7b2ff7',
+                            pink: '#f107a3',
+                            gold: '#f59e0b'
+                        }
+                    },
+                    boxShadow: {
+                        'cyan-glow': '0 0 15px rgba(0, 242, 254, 0.35)',
+                        'purple-glow': '0 0 15px rgba(123, 47, 247, 0.35)',
+                        'pink-glow': '0 0 15px rgba(241, 7, 163, 0.35)',
+                        'gold-glow': '0 0 15px rgba(245, 158, 11, 0.35)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Orbitron & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-dark-base text-slate-100 font-['Inter'] min-h-screen overflow-x-hidden selection:bg-neon-purple/30 selection:text-white">
+
+    <!-- Background Glow Effects -->
+    <div class="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-neon-purple/10 blur-[120px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-neon-cyan/10 blur-[120px] pointer-events-none z-0"></div>
+
+    <!-- Main App Container -->
+    <div class="relative z-10 max-w-md mx-auto px-4 py-6 flex flex-col min-h-screen justify-between pb-24">
+        
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-neon-purple to-neon-cyan p-[2px] shadow-purple-glow">
+                    <div class="w-full h-full bg-dark-card rounded-[10px] flex items-center justify-center">
+                        <i data-lucide="gamepad-2" class="w-5 h-5 text-neon-cyan animate-pulse"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="font-['Orbitron'] font-extrabold text-xl tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-neon-cyan">
+                        GAME<span class="text-neon-purple">PAY</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-400 font-semibold tracking-widest uppercase">Premium Store</p>
+                </div>
+            </div>
+            
+            <!-- Telegram User Profile -->
+            <div id="tg-user" class="flex items-center gap-2 bg-dark-card/80 border border-dark-border rounded-full py-1 px-3 backdrop-blur-md">
+                <div class="w-5 h-5 rounded-full bg-neon-purple/30 flex items-center justify-center text-[10px] font-bold text-neon-cyan" id="user-avatar">
+                    U
+                </div>
+                <span class="text-xs font-medium text-slate-300" id="user-name">Gamer</span>
+            </div>
+        </header>
+
+        <!-- Step Progress Bar -->
+        <div class="mb-6 bg-dark-card/50 border border-dark-border rounded-2xl p-3 backdrop-blur-md">
+            <div class="flex justify-between text-[11px] font-semibold text-slate-400 mb-2 px-1">
+                <span id="step-label-1" class="text-neon-cyan">1. ИГРА</span>
+                <span id="step-label-2">2. АККАУНТ</span>
+                <span id="step-label-3">3. ВАЛЮТА</span>
+            </div>
+            <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div id="step-progress" class="h-full w-1/3 bg-gradient-to-r from-neon-cyan to-neon-purple rounded-full transition-all duration-500 ease-out"></div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT SECTIONS -->
+        <main class="flex-grow">
+            
+            <!-- SECTION 1: GAME SELECTION -->
+            <section id="section-games" class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-['Orbitron'] text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center gap-2">
+                        <i data-lucide="layout-grid" class="w-4 h-4 text-neon-purple"></i> Выберите игру
+                    </h2>
+                    <span class="text-xs text-slate-500" id="games-count">5 игр доступно</span>
+                </div>
+                
+                <!-- Games Grid -->
+                <div class="grid grid-cols-2 gap-3" id="games-grid">
+                    <!-- Dynamic games will be loaded here -->
+                </div>
+            </section>
+
+            <!-- SECTION 2: ACCOUNT DETAILS -->
+            <section id="section-account" class="space-y-4 hidden">
+                <div class="flex items-center gap-2">
+                    <button id="back-to-games" class="p-2 bg-dark-card border border-dark-border rounded-xl text-slate-400 hover:text-white transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    </button>
+                    <h2 class="font-['Orbitron'] text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center gap-2">
+                        <i data-lucide="user" class="w-4 h-4 text-neon-purple"></i> Данные аккаунта
+                    </h2>
+                </div>
+
+                <!-- Selected Game Card Preview -->
+                <div id="selected-game-banner" class="relative h-24 rounded-2xl overflow-hidden border border-white/10 flex items-end p-4">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark-base via-dark-base/40 to-transparent z-10"></div>
+                    <img id="selected-game-banner-img" src="" alt="Game Banner" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="relative z-20 flex items-center gap-3">
+                        <img id="selected-game-banner-logo" src="" alt="Game Logo" class="w-10 h-10 rounded-xl object-cover border border-white/20">
+                        <div>
+                            <h3 id="selected-game-banner-title" class="font-['Orbitron'] font-bold text-sm text-white">Game Title</h3>
+                            <p id="selected-game-banner-currency" class="text-xs text-neon-cyan font-medium">Currency Name</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Form -->
+                <div class="bg-dark-card border border-dark-border rounded-2xl p-4 space-y-4 shadow-xl">
+                    <div class="space-y-2">
+                        <label for="player-id" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">ID Игрока (Player ID)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                                <i data-lucide="hash" class="w-4 h-4"></i>
+                            </div>
+                            <input type="text" id="player-id" placeholder="Введите ваш ID" class="w-full bg-dark-base/80 border border-dark-border rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all font-mono">
+                        </div>
+                        <p class="text-[10px] text-slate-500">Убедитесь, что ID введен правильно. Ошибка приведет к отправке на чужой аккаунт.</p>
+                    </div>
+
+                    <!-- Server Selection (Only shown if game requires it) -->
+                    <div id="server-select-container" class="space-y-2 hidden">
+                        <label for="player-server" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Сервер / Регион</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                                <i data-lucide="globe" class="w-4 h-4"></i>
+                            </div>
+                            <select id="player-server" class="w-full bg-dark-base/80 border border-dark-border rounded-xl py-3 pl-10 pr-4 text-sm text-white appearance-none focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all">
+                                <!-- Dynamic servers -->
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-500">
+                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="btn-confirm-account" class="w-full py-3.5 bg-gradient-to-r from-neon-purple to-neon-cyan hover:from-neon-purple/90 hover:to-neon-cyan/90 text-white font-bold text-sm rounded-xl transition-all shadow-purple-glow active:scale-[0.98] flex items-center justify-center gap-2">
+                        Продолжить <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- SECTION 3: CURRENCY SELECTION -->
+            <section id="section-currency" class="space-y-4 hidden">
+                <div class="flex items-center gap-2">
+                    <button id="back-to-account" class="p-2 bg-dark-card border border-dark-border rounded-xl text-slate-400 hover:text-white transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    </button>
+                    <h2 class="font-['Orbitron'] text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center gap-2">
+                        <i data-lucide="coins" class="w-4 h-4 text-neon-purple"></i> Выберите количество
+                    </h2>
+                </div>
+
+                <!-- Tabs: Packages / Custom Amount -->
+                <div class="flex bg-dark-card/60 p-1 rounded-xl border border-dark-border">
+                    <button id="tab-packages" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-white bg-dark-base border border-white/5 shadow-sm">
+                        Пакеты
+                    </button>
+                    <button id="tab-custom" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white">
+                        Своя сумма
+                    </button>
+                </div>
+
+                <!-- Packages Tab Content -->
+                <div id="tab-content-packages" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3" id="packages-grid">
+                        <!-- Dynamic packages -->
+                    </div>
+                </div>
+
+                <!-- Custom Amount Tab Content -->
+                <div id="tab-content-custom" class="space-y-4 hidden bg-dark-card border border-dark-border rounded-2xl p-4 shadow-xl">
+                    <div class="text-center space-y-1">
+                        <span class="text-xs text-slate-400 font-medium">Введите желаемое количество</span>
+                        <div class="flex items-center justify-center gap-2">
+                            <input type="number" id="custom-amount-input" value="1000" class="w-32 bg-transparent text-center font-['Orbitron'] text-3xl font-extrabold text-neon-cyan focus:outline-none border-b-2 border-dashed border-slate-700 focus:border-neon-cyan transition-colors">
+                            <span id="custom-currency-suffix" class="font-['Orbitron'] text-lg font-bold text-slate-300">UC</span>
+                        </div>
+                    </div>
+
+                    <!-- Custom Slider -->
+                    <div class="space-y-2 py-2">
+                        <input type="range" id="custom-amount-slider" min="100" max="10000" step="100" value="1000" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-neon-cyan">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-bold">
+                            <span id="slider-min">100</span>
+                            <span id="slider-max">10 000</span>
+                        </div>
+                    </div>
+
+                    <!-- Bonus Info -->
+                    <div class="bg-neon-purple/10 border border-neon-purple/20 rounded-xl p-3 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-neon-purple/20 flex items-center justify-center text-neon-pink">
+                            <i data-lucide="gift" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Бонус +<span id="custom-bonus-percent">10</span>% к покупке!</div>
+                            <div class="text-[10px] text-slate-400">Вы получите дополнительно <span id="custom-bonus-amount" class="text-neon-cyan font-bold">100</span> <span class="currency-name">UC</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Card -->
+                <div class="bg-dark-card border border-dark-border rounded-2xl p-4 space-y-3 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-neon-cyan/5 rounded-full blur-xl pointer-events-none"></div>
+                    
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Детали заказа</h3>
+                    
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Игра:</span>
+                            <span id="summary-game" class="font-bold text-white">PUBG Mobile</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">ID Игрока:</span>
+                            <span id="summary-player-id" class="font-mono font-bold text-white">512489632</span>
+                        </div>
+                        <div id="summary-server-row" class="flex justify-between hidden">
+                            <span class="text-slate-400">Сервер:</span>
+                            <span id="summary-server" class="font-bold text-white">Europe</span>
+                        </div>
+                        <div class="flex justify-between border-t border-slate-800/80 pt-2">
+                            <span class="text-slate-400">Товар:</span>
+                            <span id="summary-item" class="font-bold text-neon-cyan">1000 + 100 Бонус UC</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-slate-800/80 pt-2 mt-1">
+                            <span class="text-sm font-bold text-white">К оплате:</span>
+                            <span id="summary-price" class="text-xl font-extrabold text-neon-gold font-['Orbitron']">990 ₽</span>
+                        </div>
+                    </div>
+
+                    <button id="btn-proceed-checkout" class="w-full py-4 bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink hover:opacity-95 text-white font-extrabold text-sm rounded-xl transition-all shadow-cyan-glow active:scale-[0.98] flex items-center justify-center gap-2 mt-2 uppercase tracking-wider">
+                        <i data-lucide="credit-card" class="w-4 h-4"></i> Перейти к оплате
+                    </button>
+                </div>
+            </section>
+
+            <!-- SECTION 4: CHECKOUT / PAYMENT (MOCK) -->
+            <section id="section-checkout" class="space-y-4 hidden">
+                <div class="flex items-center gap-2">
+                    <button id="back-to-currency" class="p-2 bg-dark-card border border-dark-border rounded-xl text-slate-400 hover:text-white transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    </button>
+                    <h2 class="font-['Orbitron'] text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-neon-cyan"></i> Касса / Оплата
+                    </h2>
+                </div>
+
+                <!-- Order Status Banner -->
+                <div class="bg-gradient-to-r from-slate-900 to-dark-card border border-dark-border rounded-2xl p-4 space-y-3 relative overflow-hidden shadow-xl">
+                    <div class="absolute top-2 right-2 flex items-center gap-1 bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider">
+                        <span class="w-1.5 h-1.5 rounded-full bg-neon-cyan animate-ping"></span> Ожидает оплаты
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Сумма платежа</span>
+                        <div id="checkout-total-price" class="text-3xl font-extrabold font-['Orbitron'] text-neon-gold">990 ₽</div>
+                    </div>
+
+                    <div class="border-t border-slate-800/60 pt-3 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-4 h-4 text-slate-400"></i>
+                            <span class="text-slate-300" id="checkout-item-desc">1000 UC (PUBG Mobile)</span>
+                        </div>
+                        <span class="text-slate-500 font-mono text-[10px]">Заказ #GP-8492</span>
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="space-y-3">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Выберите способ оплаты</h3>
+                    
+                    <div class="space-y-2.5" id="payment-methods">
+                        <!-- SBP (СБП) -->
+                        <div class="payment-method-card bg-dark-card border border-dark-border hover:border-neon-cyan/50 rounded-xl p-3.5 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]" data-method="sbp">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
+                                    <span class="font-extrabold text-xs text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-green-500 to-blue-500">СБП</span>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                                        Система Быстрых Платежей
+                                        <span class="bg-emerald-500/10 text-emerald-400 text-[8px] font-bold px-1.5 py-0.5 rounded-full border border-emerald-500/20">0% Комиссия</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400">Мгновенное зачисление через любой банк РФ</div>
+                                </div>
+                            </div>
+                            <div class="w-4 h-4 rounded-full border border-slate-700 flex items-center justify-center radio-dot">
+                                <div class="w-2 h-2 rounded-full bg-neon-cyan hidden"></div>
+                            </div>
+                        </div>
+
+                        <!-- Card (Банковская карта) -->
+                        <div class="payment-method-card bg-dark-card border border-dark-border hover:border-neon-cyan/50 rounded-xl p-3.5 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]" data-method="card">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center border border-white/5 text-slate-300">
+                                    <i data-lucide="credit-card" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-white">Банковская карта РФ</div>
+                                    <div class="text-[10px] text-slate-400">Visa, Mastercard, МИР, UnionPay</div>
+                                </div>
+                            </div>
+                            <div class="w-4 h-4 rounded-full border border-slate-700 flex items-center justify-center radio-dot">
+                                <div class="w-2 h-2 rounded-full bg-neon-cyan hidden"></div>
+                            </div>
+                        </div>
+
+                        <!-- Telegram Stars -->
+                        <div class="payment-method-card bg-dark-card border border-dark-border hover:border-neon-cyan/50 rounded-xl p-3.5 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]" data-method="stars">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center border border-amber-500/20 text-neon-gold">
+                                    <i data-lucide="star" class="w-5 h-5 fill-neon-gold"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                                        Telegram Stars
+                                        <span class="bg-amber-500/10 text-neon-gold text-[8px] font-bold px-1.5 py-0.5 rounded-full border border-amber-500/20">Быстро</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400">Оплата внутренней валютой Telegram</div>
+                                </div>
+                            </div>
+                            <div class="w-4 h-4 rounded-full border border-slate-700 flex items-center justify-center radio-dot">
+                                <div class="w-2 h-2 rounded-full bg-neon-cyan hidden"></div>
+                            </div>
+                        </div>
+
+                        <!-- Crypto (Криптовалюта) -->
+                        <div class="payment-method-card bg-dark-card border border-dark-border hover:border-neon-cyan/50 rounded-xl p-3.5 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]" data-method="crypto">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center border border-white/5 text-slate-300">
+                                    <i data-lucide="coins" class="w-5 h-5 text-neon-cyan"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-white">Криптовалюта (USDT, TON, BTC)</div>
+                                    <div class="text-[10px] text-slate-400">Сети TRC-20, TON, BEP-20</div>
+                                </div>
+                            </div>
+                            <div class="w-4 h-4 rounded-full border border-slate-700 flex items-center justify-center radio-dot">
+                                <div class="w-2 h-2 rounded-full bg-neon-cyan hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkout Footer Note -->
+                <div class="bg-dark-card/40 border border-dark-border/50 rounded-xl p-3 flex items-start gap-2.5">
+                    <i data-lucide="shield" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+                    <p class="text-[10px] text-slate-400 leading-relaxed">Все платежи защищены сквозным шифрованием. Игровая валюта поступает на ваш аккаунт автоматически в течение 5-15 минут после подтверждения оплаты.</p>
+                </div>
+
+                <!-- Pay Button (Mock action) -->
+                <button id="btn-pay-now" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 text-white font-extrabold text-sm rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] active:scale-[0.98] flex items-center justify-center gap-2 uppercase tracking-wider">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i> Оплатить заказ
+                </button>
+            </section>
+
+        </main>
+
+        <!-- Footer / Bottom Navigation (Sticky at bottom) -->
+        <footer class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-dark-card/90 border-t border-dark-border/80 px-6 py-3 backdrop-blur-lg flex justify-around items-center z-40">
+            <button id="nav-shop" class="flex flex-col items-center gap-1 text-neon-cyan transition-colors">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Магазин</span>
+            </button>
+            <button id="nav-history" class="flex flex-col items-center gap-1 text-slate-400 hover:text-white transition-colors">
+                <i data-lucide="history" class="w-5 h-5"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">История</span>
+            </button>
+            <button id="nav-support" class="flex flex-col items-center gap-1 text-slate-400 hover:text-white transition-colors">
+                <i data-lucide="help-circle" class="w-5 h-5"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Поддержка</span>
+            </button>
+        </footer>
+
+        <!-- HISTORY MODAL / SCREEN (DYNAMICALLY SHOWN) -->
+        <div id="screen-history" class="fixed inset-0 max-w-md mx-auto bg-dark-base/95 backdrop-blur-md z-50 p-4 pb-24 hidden flex flex-col">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="font-['Orbitron'] text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center gap-2">
+                    <i data-lucide="history" class="w-4 h-4 text-neon-purple"></i> История покупок
+                </h2>
+                <button id="close-history" class="p-1.5 bg-dark-card border border-dark-border rounded-lg text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="flex-grow overflow-y-auto space-y-3" id="history-list">
+                <!-- Mock history items -->
+                <div class="bg-dark-card border border-dark-border rounded-xl p-3.5 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                            <i data-lucide="check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">60 Genesis Crystals</div>
+                            <div class="text-[9px] text-slate-400">Genshin Impact • ID: 71249583</div>
+                            <div class="text-[9px] text-slate-500">12 мая 2026, 14:23</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-bold text-neon-gold">119 ₽</div>
+                        <span class="text-[8px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full">Успешно</span>
+                    </div>
+                </div>
+
+                <div class="bg-dark-card border border-dark-border rounded-xl p-3.5 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                            <i data-lucide="check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">325 UC</div>
+                            <div class="text-[9px] text-slate-400">PUBG Mobile • ID: 512489632</div>
+                            <div class="text-[9px] text-slate-500">28 апреля 2026, 19:11</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-bold text-neon-gold">390 ₽</div>
+                        <span class="text-[8px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full">Успешно</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUPPORT MODAL / SCREEN -->
+        <div id="screen-support" class="fixed inset-0 max-w-md mx-auto bg-dark-base/95 backdrop-blur-md z-50 p-4 pb-24 hidden flex flex-col">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="font-['Orbitron'] text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center gap-2">
+                    <i data-lucide="help-circle" class="w-4 h-4 text-neon-purple"></i> Поддержка
+                </h2>
+                <button id="close-support" class="p-1.5 bg-dark-card border border-dark-border rounded-lg text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="bg-dark-card border border-dark-border rounded-xl p-4 space-y-2">
+                    <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                        <i data-lucide="message-square" class="w-4 h-4 text-neon-cyan"></i> Есть вопросы по заказу?
+                    </h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">Наша служба поддержки работает 24/7. Среднее время ответа оператора составляет менее 3 минут.</p>
+                    <button class="w-full mt-2 py-2.5 bg-neon-purple/20 border border-neon-purple/40 hover:bg-neon-purple/30 text-neon-cyan font-bold text-xs rounded-lg transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="send" class="w-3.5 h-3.5"></i> Написать в поддержку
+                    </button>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Частые вопросы (FAQ)</h3>
+                    
+                    <div class="bg-dark-card border border-dark-border rounded-xl p-3.5 space-y-1">
+                        <div class="text-xs font-bold text-white">Как быстро приходит игровая валюта?</div>
+                        <div class="text-[11px] text-slate-400 leading-relaxed">Обычно зачисление происходит автоматически в течение 5-15 минут после оплаты. В редких случаях из-за технических работ на стороне игры платеж может задержаться до 1 часа.</div>
+                    </div>
+
+                    <div class="bg-dark-card border border-dark-border rounded-xl p-3.5 space-y-1">
+                        <div class="text-xs font-bold text-white">Что делать, если я указал неверный ID?</div>
+                        <div class="text-[11px] text-slate-400 leading-relaxed">Если платеж еще не обработан, срочно напишите в поддержку с указанием номера заказа и верного ID. Если валюта уже отправлена на указанный вами неверный ID, мы, к сожалению, не сможем вернуть средства.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUCCESS ORDER MODAL -->
+        <div id="modal-success" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-dark-card border border-neon-cyan/30 rounded-2xl p-6 w-full max-w-xs text-center space-y-4 shadow-cyan-glow relative overflow-hidden">
+                <div class="absolute -top-10 -left-10 w-24 h-24 bg-neon-cyan/10 rounded-full blur-xl"></div>
+                
+                <div class="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto animate-bounce">
+                    <i data-lucide="shield-check" class="w-8 h-8"></i>
+                </div>
+                
+                <div class="space-y-1">
+                    <h3 class="font-['Orbitron'] font-bold text-lg text-white">Заказ Оплачен!</h3>
+                    <p class="text-xs text-slate-400">Ваш заказ принят в обработку и будет доставлен в течение 5-15 минут.</p>
+                </div>
+
+                <div class="bg-dark-base/80 border border-dark-border rounded-xl p-3 text-left space-y-1 text-[11px]">
+                    <div class="flex justify-between"><span class="text-slate-500">Заказ:</span><span class="font-mono text-white">#GP-8492</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Товар:</span><span class="text-neon-cyan font-bold" id="success-modal-item">1000 UC</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">ID Игрока:</span><span class="font-mono text-white" id="success-modal-id">512489632</span></div>
+                </div>
+
+                <button id="btn-success-close" class="w-full py-2.5 bg-gradient-to-r from-neon-cyan to-neon-purple text-white font-bold text-xs rounded-xl transition-all shadow-cyan-glow">
+                    Отлично
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
