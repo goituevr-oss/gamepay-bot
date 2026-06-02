@@ -611,9 +611,18 @@ function setupEventListeners() {
     // Select first payment method (SBP) by default
     paymentCards[0].classList.add('active');
 
-    // Pay Now Button (Mock checkout action)
+    // Pay Now Button (Redirect to Lava.ru)
     document.getElementById('btn-pay-now').addEventListener('click', () => {
         hapticFeedback('success');
+        
+        const lavaUrl = 'https://business.lava.ru/1a052828-a793-432c-8206-704522ddc3ab/';
+        
+        // Open Lava.ru payment link inside Telegram or external browser
+        if (tg) {
+            tg.openLink(lavaUrl);
+        } else {
+            window.open(lavaUrl, '_blank');
+        }
         
         // Update Success Modal details
         let finalItemText = '';
@@ -626,7 +635,7 @@ function setupEventListeners() {
         document.getElementById('success-modal-item').textContent = finalItemText;
         document.getElementById('success-modal-id').textContent = state.playerId;
 
-        // Show success modal
+        // Show verification/pending modal
         document.getElementById('modal-success').classList.remove('hidden');
     });
 
