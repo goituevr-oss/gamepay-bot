@@ -33,7 +33,7 @@ bot.onText(/\/start/, (msg) => {
 
     // We will use a fallback or placeholder URL. The user will replace it with their GitHub Pages URL,
     // or we can serve it locally if they use tools like ngrok.
-    const webAppUrl = process.env.WEBAPP_URL || 'https://elizabeth.github.io/gamepay/'; // Placeholder
+    const webAppUrl = process.env.WEBAPP_URL || 'https://goituevr-oss.github.io/gamepay-bot/';
 
     bot.sendMessage(chatId, welcomeMessage, {
         parse_mode: 'Markdown',
