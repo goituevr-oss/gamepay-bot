@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доставка и Возврат - GamePay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            base: '#0b0d19',
+                            card: '#14182d',
+                            border: 'rgba(255, 255, 255, 0.08)'
+                        },
+                        neon: {
+                            cyan: '#00f2fe',
+                            purple: '#7b2ff7'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="bg-dark-base text-slate-300 font-['Inter'] min-h-screen p-6">
+    <div class="max-w-2xl mx-auto bg-dark-card border border-dark-border rounded-2xl p-6 shadow-xl space-y-6">
+        
+        <header class="border-b border-slate-800 pb-4">
+            <h1 class="font-['Orbitron'] font-bold text-2xl text-white tracking-wider">
+                ДОСТАВКА И <span class="text-neon-cyan">ВОЗВРАТ</span>
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">Информация для покупателей GamePay</p>
+        </header>
+
+        <div class="space-y-6 text-sm leading-relaxed">
+            <!-- Delivery Section -->
+            <section class="space-y-2">
+                <h2 class="text-white font-bold text-base flex items-center gap-2">
+                    📦 1. Сроки и условия доставки
+                </h2>
+                <p>Все товары в нашем магазине являются цифровыми. Мы осуществляем моментальную доставку игровой валюты прямо в ваш игровой аккаунт без физической отправки.</p>
+                <div class="bg-dark-base/50 p-4 border border-dark-border rounded-xl space-y-2 text-slate-400 text-xs">
+                    <div><strong>Способ доставки:</strong> Автоматическое начисление по Player ID / UID игрока через API официальных игровых издателей и дистрибьюторов.</div>
+                    <div><strong>Сроки доставки:</strong> От 5 до 15 минут после подтверждения оплаты платежной системой.</div>
+                    <div><strong>Стоимость доставки:</strong> 0 ₽ (бесплатно).</div>
+                    <div><strong>Регионы доставки:</strong> Весь мир (включая РФ, СНГ, Европу, Азию и Америку в зависимости от выбранного игрового сервера).</div>
+                </div>
+            </section>
+
+            <!-- Refund Section -->
+            <section class="space-y-2">
+                <h2 class="text-white font-bold text-base flex items-center gap-2">
+                    🔄 2. Политика возврата и отмены платежа
+                </h2>
+                <p>Поскольку мы поставляем исключительно цифровой контент и моментальные услуги пополнения, нашими правилами установлены строгие рамки возврата денежных средств:</p>
+                <ul class="list-disc list-inside pl-4 space-y-1 text-slate-400">
+                    <li><strong>Валюта уже начислена:</strong> Возврат денежных средств невозможен, если заказанная игровая валюта уже была успешно зачислена на указанный вами ID.</li>
+                    <li><strong>Ошибка в реквизитах:</strong> Если при оформлении вы допустили опечатку в ID игрока или сервере и валюта ушла на чужой аккаунт, возврат или компенсация не производятся. Пожалуйста, внимательно сверяйте данные.</li>
+                    <li><strong>Технический сбой:</strong> Если платеж успешно проведен, но валюта не пришла в течение 24 часов из-за технического сбоя, наша служба поддержки выполнит повторную отправку либо осуществит полный возврат средств по вашему запросу.</li>
+                </ul>
+            </section>
+
+            <!-- Contact Support Section -->
+            <section class="space-y-2">
+                <h2 class="text-white font-bold text-base flex items-center gap-2">
+                    💬 3. Как оформить возврат или задать вопрос?
+                </h2>
+                <p>Если у вас возникла спорная ситуация или платеж не поступил вовремя, незамедлительно напишите в нашу службу поддержки. Приложите к сообщению:</p>
+                <ol class="list-decimal list-inside pl-4 space-y-1 text-slate-400">
+                    <li>Номер заказа или чек оплаты из платежной системы;</li>
+                    <li>Игровой ID (UID) и название игры;</li>
+                    <li>Скриншот вашего игрового профиля, где виден баланс валюты.</li>
+                </ol>
+                <p class="mt-2 text-neon-cyan">Контакты службы поддержки: <strong>support@gamepay-shop.ru</strong> или Telegram <strong>@gamepay_support_demo</strong></p>
+            </section>
+        </div>
+
+        <footer class="border-t border-slate-800 pt-4 flex justify-between items-center">
+            <a href="index.html" class="text-xs text-neon-purple hover:underline">Вернуться в магазин</a>
+            <span class="text-xs text-slate-500">© 2026 GamePay</span>
+        </footer>
+    </div>
+</body>
+</html>
