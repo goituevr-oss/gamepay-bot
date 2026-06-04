@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GamePay - Игровая Валюта</title>
-    <!-- Telegram WebApp SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Enot Verification Meta Tag -->
     <meta name="enot" content="4a8b85a6" />
     <!-- Lava Verification Meta Tags -->
@@ -78,12 +76,12 @@
                 </div>
             </div>
             
-            <!-- Telegram User Profile -->
-            <div id="tg-user" class="flex items-center gap-2 bg-dark-card/80 border border-dark-border rounded-full py-1 px-3 backdrop-blur-md">
+            <!-- User Profile Badge -->
+            <div class="flex items-center gap-2 bg-dark-card/80 border border-dark-border rounded-full py-1 px-3 backdrop-blur-md">
                 <div class="w-5 h-5 rounded-full bg-neon-purple/30 flex items-center justify-center text-[10px] font-bold text-neon-cyan" id="user-avatar">
-                    U
+                    G
                 </div>
-                <span class="text-xs font-medium text-slate-300" id="user-name">Gamer</span>
+                <span class="text-xs font-medium text-slate-300" id="user-name">Гость</span>
             </div>
         </header>
 
@@ -334,25 +332,6 @@
                                 <div>
                                     <div class="text-xs font-bold text-white">Банковская карта РФ</div>
                                     <div class="text-[10px] text-slate-400">Visa, Mastercard, МИР, UnionPay</div>
-                                </div>
-                            </div>
-                            <div class="w-4 h-4 rounded-full border border-slate-700 flex items-center justify-center radio-dot">
-                                <div class="w-2 h-2 rounded-full bg-neon-cyan hidden"></div>
-                            </div>
-                        </div>
-
-                        <!-- Telegram Stars -->
-                        <div class="payment-method-card bg-dark-card border border-dark-border hover:border-neon-cyan/50 rounded-xl p-3.5 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]" data-method="stars">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center border border-amber-500/20 text-neon-gold">
-                                    <i data-lucide="star" class="w-5 h-5 fill-neon-gold"></i>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-bold text-white flex items-center gap-1.5">
-                                        Telegram Stars
-                                        <span class="bg-amber-500/10 text-neon-gold text-[8px] font-bold px-1.5 py-0.5 rounded-full border border-amber-500/20">Быстро</span>
-                                    </div>
-                                    <div class="text-[10px] text-slate-400">Оплата внутренней валютой Telegram</div>
                                 </div>
                             </div>
                             <div class="w-4 h-4 rounded-full border border-slate-700 flex items-center justify-center radio-dot">

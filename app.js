@@ -1,16 +1,10 @@
-// Initialize Telegram WebApp
-const tg = window.Telegram ? window.Telegram.WebApp : null;
-
-if (tg) {
-    tg.ready();
-    tg.expand();
-    // Enable haptic feedback if available
-    if (tg.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('light');
-    }
-}
-
-// Games Database
+// Initialize App
+document.addEventListener('DOMContentLoaded', () => {
+    setupTelegramUser();
+    renderGames();
+    setupEventListeners();
+    lucide.createIcons();
+});
 const gamesData = [
     {
         id: 'pubg',
@@ -150,19 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
 });
 
-// Setup Telegram User Info
+// Setup User Info
 function setupTelegramUser() {
-    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        const user = tg.initDataUnsafe.user;
-        const name = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-        document.getElementById('user-name').textContent = name;
-        
-        const avatar = document.getElementById('user-avatar');
-        avatar.textContent = user.first_name.charAt(0).toUpperCase();
-        if (user.photo_url) {
-            avatar.innerHTML = `<img src="${user.photo_url}" class="w-full h-full rounded-full object-cover">`;
-        }
-    }
+    document.getElementById('user-name').textContent = 'Гость';
+    const avatar = document.getElementById('user-avatar');
+    avatar.textContent = 'G';
 }
 
 // Render Games Grid
@@ -613,16 +599,8 @@ function setupEventListeners() {
 
     // Pay Now Button (Redirect to Lava.ru)
     document.getElementById('btn-pay-now').addEventListener('click', () => {
-        hapticFeedback('success');
-        
         const lavaUrl = 'https://business.lava.ru/1a052828-a793-432c-8206-704522ddc3ab/';
-        
-        // Open Lava.ru payment link inside Telegram or external browser
-        if (tg) {
-            tg.openLink(lavaUrl);
-        } else {
-            window.open(lavaUrl, '_blank');
-        }
+        window.open(lavaUrl, '_blank');
         
         // Update Success Modal details
         let finalItemText = '';
@@ -713,13 +691,7 @@ function setActiveNav(activeBtn) {
     });
 }
 
-// Haptic Feedback Helper
+// Haptic Feedback Helper (No-op for standard web)
 function hapticFeedback(type) {
-    if (tg && tg.HapticFeedback) {
-        if (type === 'light' || type === 'medium' || type === 'heavy') {
-            tg.HapticFeedback.impactOccurred(type);
-        } else if (type === 'success' || type === 'warning' || type === 'error') {
-            tg.HapticFeedback.notificationOccurred(type);
-        }
-    }
+    // Standard browsers do not support haptic feedback
 }
